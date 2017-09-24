@@ -1,73 +1,79 @@
 from openpyxl import load_workbook
 
-wb = load_workbook(filename=r'2174 Schedule Planning  - Instructor Analysis.xlsx')
+#init workbook
+filename = '2174 Schedule Planning  - Instructor Analysis.xlsx'
+wb = load_workbook(filename)
 sheetnames = wb.get_sheet_names()
 ws = wb.get_sheet_by_name(sheetnames[0])
 
-data_dic = {}
-for rx in range(1, ws.max_row + 1):
+#store schedule sheet to dict
+schedule = {}
+for row in range(1, ws.max_row + 1):
     temp_list = []
-    pid = rx - 1
-    w1 = ws.cell(row=rx, column=1).value
-    w2 = ws.cell(row=rx, column=2).value
-    w3 = ws.cell(row=rx, column=3).value
-    w4 = ws.cell(row=rx, column=4).value
-    w5 = ws.cell(row=rx, column=5).value
-    w6 = ws.cell(row=rx, column=6).value
-    w7 = ws.cell(row=rx, column=7).value
-    temp_list = [w1, w2, w3, w4, w5, w6, w7]
-    data_dic[pid] = temp_list
+    index = row - 1
+    col1 = ws.cell(row=row, column=1).value
+    col2 = ws.cell(row=row, column=2).value
+    col3 = ws.cell(row=row, column=3).value
+    col4 = ws.cell(row=row, column=4).value
+    col5 = ws.cell(row=row, column=5).value
+    col6 = ws.cell(row=row, column=6).value
+    col7 = ws.cell(row=row, column=7).value
+    temp_list = [col1, col2, col3, col4, col5, col6, col7]
+    schedule[index] = temp_list
 
-data_dic2 = {}
-data_dic2[0] = ['Instructor', 'Classes']
+instructor_output = {}
+instructor_output[0] = ['Instructor']
 subject = ''
 num = 0;
 section = 0;
 i = 0;
-for rx in range(1, ws.max_row):
-    if ((data_dic[rx][0] is None) and (data_dic[rx][4] is None)):
+for row in range(1, ws.max_row):
+    if ((schedule[row][0] is None) and (schedule[row][4] is None)):
         continue;
-    if (data_dic[rx][1] is None):
-        data_dic[rx][1] = subject
+    if (schedule[row][1] is None):
+        schedule[row][1] = subject
     else:
-        subject = data_dic[rx][1]
-    if (data_dic[rx][2] is None):
-        data_dic[rx][2] = num
+        subject = schedule[row][1]
+    if (schedule[row][2] is None):
+        schedule[row][2] = num
     else:
-        num = data_dic[rx][2]
-    if (data_dic[rx][3] is None):
-        data_dic[rx][3] = section
+        num = schedule[row][2]
+    if (schedule[row][3] is None):
+        schedule[row][3] = section
     else:
-        section = data_dic[rx][3]
-    if (data_dic[rx][3] <= 9):
-        data_dic[rx][3] = '0' + str(data_dic[rx][3])
-    if (data_dic[rx][4] != 'TBA'):
-        if (data_dic[rx][5] < 1000):
-            data_dic[rx][5] = (str)(data_dic[rx][5])[0:1] + ':' + (str)(data_dic[rx][5])[1:]
+        section = schedule[row][3]
+    if (schedule[row][3] <= 9):
+        schedule[row][3] = '0' + str(schedule[row][3])
+    if (schedule[row][4] != 'TBA'):
+        if (schedule[row][5] < 1000):
+            schedule[row][5] = (str)(schedule[row][5])[0:1] + ':' + (str)(schedule[row][5])[1:]
         else:
-            data_dic[rx][5] = (str)(data_dic[rx][5])[0:2] + ':' + (str)(data_dic[rx][5])[2:]
-        if (data_dic[rx][6] < 1000):
-            data_dic[rx][6] = (str)(data_dic[rx][6])[0:1] + ':' + (str)(data_dic[rx][6])[1:]
+            schedule[row][5] = (str)(schedule[row][5])[0:2] + ':' + (str)(schedule[row][5])[2:]
+        if (schedule[row][6] < 1000):
+            schedule[row][6] = (str)(schedule[row][6])[0:1] + ':' + (str)(schedule[row][6])[1:]
         else:
-            data_dic[rx][6] = (str)(data_dic[rx][6])[0:2] + ':' + (str)(data_dic[rx][6])[2:]
-        temp = data_dic[rx][1] + ' ' + (str)(data_dic[rx][2]) + '-' + (str)(data_dic[rx][3]) + ', ' + data_dic[rx][4] + ', ' + (str)(data_dic[rx][5]) + '-' + (str)(data_dic[rx][6])
+            schedule[row][6] = (str)(schedule[row][6])[0:2] + ':' + (str)(schedule[row][6])[2:]
+        temp = schedule[row][1] + ' ' + (str)(schedule[row][2]) + '-' + (str)(schedule[row][3]) + ', ' + schedule[row][4] + ', ' + (str)(schedule[row][5]) + '-' + (str)(schedule[row][6])
     else:
-        temp = data_dic[rx][1] + ' ' + (str)(data_dic[rx][2]) + '-' + (str)(data_dic[rx][3]) + ', ' + data_dic[rx][4]
+        temp = schedule[row][1] + ' ' + (str)(schedule[row][2]) + '-' + (str)(schedule[row][3]) + ', ' + schedule[row][4]
 
-    if ((data_dic[rx][0] is None)):
-        data_dic2[i].append(temp)
+    if ((schedule[row][0] is None)):
+        instructor_output[i].append(temp)
     else:
         i += 1
-        data_dic2[i] = [data_dic[rx][0], temp]
+        instructor_output[i] = [schedule[row][0], temp]
 
-# print(data_dic)
-# print(data_dic2)
-
-ws3 = wb.get_sheet_by_name(sheetnames[1])
-for key in data_dic2:
-    for col in range(1, len(data_dic2[key]) + 1):
-        ws3.cell(column=col, row=key + 1, value=data_dic2[key][col - 1])
-wb.save('empty_book.xlsx')
+max_len = max([len(n) for n in instructor_output.values()])
+for num in range (1, max_len):
+    instructor_output[0].append('Class' + str(num))
+temp = sheetnames[1]
+ws_archived = wb.get_sheet_by_name(temp)
+wb.remove_sheet(ws_archived)
+ws_new = wb.create_sheet(temp)
+for key in instructor_output:
+    for col in range(1, len(instructor_output[key]) + 1):
+        ws_new.cell(column=col, row=key + 1, value=instructor_output[key][col - 1])
+wb.save(filename)
 
 
 
