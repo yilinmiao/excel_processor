@@ -21,6 +21,7 @@ for row in range(1, ws.max_row + 1):
     temp_list = [col1, col2, col3, col4, col5, col6, col7]
     schedule[index] = temp_list
 
+#generate output
 instructor_output = {}
 instructor_output[0] = ['Instructor']
 subject = ''
@@ -70,9 +71,9 @@ temp = sheetnames[1]
 ws_archived = wb.get_sheet_by_name(temp)
 wb.remove_sheet(ws_archived)
 ws_new = wb.create_sheet(temp)
-for key in instructor_output:
-    for col in range(1, len(instructor_output[key]) + 1):
-        ws_new.cell(column=col, row=key + 1, value=instructor_output[key][col - 1])
+for row in instructor_output:
+    for col in range(0, len(instructor_output[row])):
+        ws_new.cell(column=col + 1, row=row + 1, value=instructor_output[row][col])
 wb.save(filename)
 
 
